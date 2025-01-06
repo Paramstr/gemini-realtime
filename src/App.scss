@@ -149,8 +149,13 @@ body {
   .main-app-area {
     display: flex;
     flex: 1;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    width: 100%;
+    padding: 20px;
+    gap: 20px;
   }
 
   .function-call {
@@ -164,8 +169,38 @@ body {
 
 /* video player */
 .stream {
-  flex-grow: 1;
-  max-width: 90%;
+  width: 45%;
+  max-width: 800px;
   border-radius: 32px;
-  max-height: fit-content;
+  height: auto;
+}
+
+.scraped-content-view {
+  width: 45%;
+  max-width: 800px;
+  padding: 20px;
+  background: var(--Neutral-5);
+  border-radius: 32px;
+  overflow: auto;
+  max-height: 60vh;
+
+  h3 {
+    color: var(--Neutral-90);
+    margin-bottom: 15px;
+  }
+
+  .content-preview {
+    background: var(--Neutral-10);
+    padding: 15px;
+    border-radius: 8px;
+    
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--Neutral-80);
+    }
+  }
 }

@@ -24,13 +24,13 @@
     "zustand": "^5.0.1"
   },
   "scripts": {
-    "start-https": "HTTPS=true react-scripts start",
-    "start": "react-scripts start",
+    "start-https": "echo -e \"\\033]0;Frontend Dev Server\\007\" && HTTPS=true react-scripts start",
+    "start": "echo -e \"\\033]0;Frontend Dev Server\\007\" && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "ts-node --project src/server/tsconfig.json src/server/index.ts",
-    "server:watch": "nodemon --exec ts-node --project src/server/tsconfig.json src/server/index.ts"
+    "server": "echo -e \"\\033]0;Backend Server\\007\" && ts-node --project src/server/tsconfig.json src/server/index.ts",
+    "server:watch": "echo -e \"\\033]0;Backend Server (Watch Mode)\\007\" && nodemon --exec ts-node --project src/server/tsconfig.json src/server/index.ts"
   },
   "eslintConfig": {
     "extends": [

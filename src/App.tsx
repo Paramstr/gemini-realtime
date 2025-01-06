@@ -18,10 +18,10 @@ import { useRef, useState } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
-import { Altair } from "./components/altair/Altair";
 import { WebScraper } from "./components/web-scraper/WebScraper";
 import ControlTray from "./components/control-tray/ControlTray";
 import cn from "classnames";
+import { MediaSource } from "./types/media";
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
@@ -32,11 +32,29 @@ const host = "generativelanguage.googleapis.com";
 const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
 
 function App() {
-  // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
-  // feel free to style as you see fit
   const videoRef = useRef<HTMLVideoElement>(null);
-  // either the screen capture, the video or null, if null we hide it
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const [mediaSources, setMediaSources] = useState<MediaSource[]>([]);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(-1);
+
+  const handleNewScrapedContent = (content: string, url: string) => {
+    setMediaSources(prev => [...prev, {
+      id: crypto.randomUUID(),
+      type: 'scrape' as const,
+      content,
+      url,
+      timestamp: Date.now()
+    }]);
+  };
+
+  const cycleMedia = () => {
+    if (mediaSources.length === 0) return;
+    setCurrentMediaIndex(prev => (prev + 1) % (mediaSources.length + 1));
+  };
+
+  const currentContent = currentMediaIndex >= 0 && currentMediaIndex < mediaSources.length 
+    ? mediaSources[currentMediaIndex] 
+    : null;
 
   return (
     <div className="App">
@@ -45,17 +63,24 @@ function App() {
           <SidePanel />
           <main>
             <div className="main-app-area">
-              {/* APP goes here */}
-              <WebScraper />
-              {/* <Altair /> */}
-              <video
-                className={cn("stream", {
-                  hidden: !videoRef.current || !videoStream,
-                })}
-                ref={videoRef}
-                autoPlay
-                playsInline
-              />
+              <WebScraper onNewContent={handleNewScrapedContent} />
+              {currentContent?.type === 'scrape' ? (
+                <div className="scraped-content-view">
+                  <h3>Scraped Content from: {currentContent.url}</h3>
+                  <div className="content-preview">
+                    <pre>{currentContent.content}</pre>
+                  </div>
+                </div>
+              ) : (
+                <video
+                  className={cn("stream", {
+                    hidden: !videoRef.current || !videoStream,
+                  })}
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                />
+              )}
             </div>
 
             <ControlTray
@@ -63,7 +88,13 @@ function App() {
               supportsVideo={true}
               onVideoStreamChange={setVideoStream}
             >
-              {/* put your own buttons here */}
+              <button 
+                className="action-button"
+                onClick={cycleMedia}
+                disabled={mediaSources.length === 0}
+              >
+                <span className="material-symbols-outlined">switch_video</span>
+              </button>
             </ControlTray>
           </main>
         </div>

@@ -1,5 +1,6 @@
+export type MediaSourceType = 'screen' | 'scrape' | 'webcam';
 
-type BaseMediaSource = {
+export type BaseMediaSource = {
   id: string;
   type: MediaSourceType;
   timestamp: number;
@@ -28,4 +29,4 @@ type WebcamMediaSource = BaseMediaSource & {
   stream: MediaStream;
 };
 
-type MediaSourceType = ScreenMediaSource | ScrapeMediaSource | WebcamMediaSource; 
+export type MediaSource = ScreenMediaSource | ScrapeMediaSource | WebcamMediaSource; 

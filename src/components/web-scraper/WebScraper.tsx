@@ -23,7 +23,11 @@ const declaration: FunctionDeclaration = {
   },
 };
 
-function WebScraperComponent() {
+interface WebScraperProps {
+  onNewContent: (content: string, url: string) => void;
+}
+
+function WebScraperComponent({ onNewContent }: WebScraperProps) {
   const { client, setConfig } = useLiveAPIContext();
   const [scrapedContent, setScrapedContent] = useState<string>("");
 
@@ -39,7 +43,7 @@ function WebScraperComponent() {
       systemInstruction: {
         parts: [
           {
-            text: 'You are my helpful assistant. When I ask you to get information from a website, call the "scrape_website" function with the URL. Only scrape websites when explicitly asked.',
+            text: 'When a website URL is provided, immediately scrape it using the "scrape_website" function and return the content without additional dialogue. Only scrape when a URL is explicitly given.',
           },
         ],
       },
@@ -68,7 +72,25 @@ function WebScraperComponent() {
           });
           
           const data = await response.json();
+          
+          if (!data.success) {
+            console.error('Scraping failed:', data.error);
+            client.sendToolResponse({
+              functionResponses: [{
+                response: { 
+                  output: { 
+                    success: false,
+                    error: data.error || 'Failed to scrape website'
+                  } 
+                },
+                id: fc.id,
+              }],
+            });
+            return;
+          }
+
           setScrapedContent(data.content);
+          onNewContent(data.content, url);
           
           client.sendToolResponse({
             functionResponses: [{
@@ -84,21 +106,17 @@ function WebScraperComponent() {
           });
         } catch (error) {
           console.error('Scraping failed:', error);
-          setTimeout(
-            () =>
-              client.sendToolResponse({
-                functionResponses: [{
-                  response: { 
-                    output: { 
-                      success: false,
-                      error: (error as Error).message
-                    } 
-                  },
-                  id: fc.id,
-                }],
-              }),
-            200
-          );
+          client.sendToolResponse({
+            functionResponses: [{
+              response: { 
+                output: { 
+                  success: false,
+                  error: error instanceof Error ? error.message : 'Failed to scrape website'
+                } 
+              },
+              id: fc.id,
+            }],
+          });
         }
       }
     };
