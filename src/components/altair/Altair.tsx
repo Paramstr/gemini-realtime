@@ -19,6 +19,7 @@ import vegaEmbed from "vega-embed";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import { ToolCall } from "../../multimodal-live-types";
 
+// Outline function purpose
 const declaration: FunctionDeclaration = {
   name: "render_altair",
   description: "Displays an altair graph in json format.",
@@ -34,11 +35,12 @@ const declaration: FunctionDeclaration = {
     required: ["json_graph"],
   },
 };
-
+//This function's purpose is to render an altair graph in json format.
 function AltairComponent() {
   const [jsonString, setJSONString] = useState<string>("");
   const { client, setConfig } = useLiveAPIContext();
 
+  //Thus useEffect is run when the component is mounted.
   useEffect(() => {
     setConfig({
       model: "models/gemini-2.0-flash-exp",
@@ -63,6 +65,7 @@ function AltairComponent() {
     });
   }, [setConfig]);
 
+  //this useeffect runs
   useEffect(() => {
     const onToolCall = (toolCall: ToolCall) => {
       console.log(`got toolcall`, toolCall);
