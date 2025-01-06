@@ -47,7 +47,7 @@ function App() {
             <div className="main-app-area">
               {/* APP goes here */}
               <WebScraper />
-              <Altair />
+              {/* <Altair /> */}
               <video
                 className={cn("stream", {
                   hidden: !videoRef.current || !videoStream,

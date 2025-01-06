@@ -30,6 +30,12 @@ function WebScraperComponent() {
   useEffect(() => {
     setConfig({
       model: "models/gemini-2.0-flash-exp",
+      generationConfig: {
+        responseModalities: "audio",
+        speechConfig: {
+          voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } },
+        },
+      },
       systemInstruction: {
         parts: [
           {
@@ -38,7 +44,6 @@ function WebScraperComponent() {
         ],
       },
       tools: [
-        { googleSearch: {} },
         { functionDeclarations: [declaration] },
       ],
     });
